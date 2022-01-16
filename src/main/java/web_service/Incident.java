@@ -10,7 +10,7 @@ public class Incident {
     private String serviceName;
     private boolean isActive;
     private String problemDescription;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

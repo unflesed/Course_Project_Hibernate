@@ -46,16 +46,30 @@ public class UserHelper {
     public User getUserById(long idUser){
         Session session = sessionFactory.openSession();
 
-        return session.get(User.class, idUser);
+        User user = session.get(User.class, idUser);
+
+        session.close();
+
+        return user;
     }
 
     public void remove(User user) {
-        em.getTransaction().begin();
-        em.remove(em.contains(user) ? user : em.merge(user));
-        em.getTransaction().commit();
+//        em.getTransaction().begin();
+//        em.remove(em.contains(user) ? user : em.merge(user));
+//        em.getTransaction().commit();
+        Session session = sessionFactory.openSession();
+
+        session.beginTransaction();
+
+        session.delete(user);
+
+        session.getTransaction().commit();
+
+        session.close();
+
     }
 
-    public void getAllUsers(){
+    public List<User> getAllUsers(){
         Session session = sessionFactory.openSession();
 
         CriteriaQuery<User> criteriaQuery = session.getCriteriaBuilder().createQuery(User.class);
@@ -63,10 +77,7 @@ public class UserHelper {
 
         List<User> userList = session.createQuery(criteriaQuery).getResultList();
 
-        for (User user: userList) {
-            System.out.println(user);
-        }
-
+        return userList;
     }
 
     public User checkUserPassword(String user, String password){

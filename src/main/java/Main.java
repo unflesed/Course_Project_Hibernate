@@ -1,6 +1,7 @@
 import helpers.*;
 import web_service.*;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -17,7 +18,7 @@ public class Main {
         String userRole = null;
         String input = ""; // переменная для получения запроса к базе данных
 
-
+        //Проверка имени пользователя и пароля
         do {
             System.out.println("Введите имя пользователя: ");
             userName = sc.next();
@@ -32,6 +33,7 @@ public class Main {
             }
         }while (userRole == null);
 
+        //Получение запроса от пользователя
         System.out.println("Для выхода введите 'exit'");
 
         do {
@@ -91,7 +93,6 @@ public class Main {
         UserHelper uh = new UserHelper();
         IncidentHelper ih = new IncidentHelper();
         ProfileHelper ph = new ProfileHelper();
-        UserRoleHelper urh = new UserRoleHelper();
 
         String strForSwitch = input.replaceAll("(?<=\\{)\\d+(?=\\})","");
         String idString = input.replaceAll("[^\\d]","");
@@ -103,69 +104,50 @@ public class Main {
 
         switch (strForSwitch){
             case "f_a_u":
-                uh.getAllUsers();
+                List<User> users = uh.getAllUsers();
+
+                for (User u: users) {
+                    System.out.println(u);
+                }
                 break;
             case "f_a_i":
-                ih.getAllIncidents();
+                List<Incident> incidents = ih.getAllIncidents();
+
+                for (Incident i: incidents) {
+                    System.out.println(i);
+                }
                 break;
             case "f_a_a_i":
-                ih.getAllActiveIncidents();
+                List<Incident> incidentList = ih.getAllActiveIncidents();
+
+                for (Incident i : incidentList) {
+                    System.out.println(i);
+                }
                 break;
             case "f_u_b_{}":
                 System.out.println(uh.getUserById(id));
                 break;
             case "a_u":
-                Profile profile = new Profile();
-                System.out.println("Введите имя: ");
-                profile.setFirstName(sc.next());
-                System.out.println("Введите фамилию: ");
-                profile.setLastName(sc.next());
-                System.out.println("Введите email: ");
-                profile.seteMail(sc.next());
-                System.out.println("Введите телефон: ");
-                profile.setPhoneNumber(sc.next());
-                System.out.println("Введите почтовый индекс: ");
-                profile.setPostalCode(sc.nextLong());
-
                 User newUser = new User();
-                System.out.println("Введите имя пользователя: ");
-                newUser.setUser_name(sc.next());
-                System.out.println("Введите пароль: ");
-                newUser.setPassword(sc.next());
-                newUser.setProfile(profile);
-                System.out.println("Выберите права доступа (USER, ADMIN, SUPER_ADMIN): ");
-                newUser.setUserRole(urh.getUserRole(sc.next()));
+                Profile profile = new Profile();
+                Profile prf = fillProfile(profile);
 
-                ph.addProfile(profile);
-                uh.addUser(newUser);
+                ph.addProfile(prf);
+                uh.addUser(fillUser(newUser, prf));
                 System.out.println("Пользователь добавлен!");
                 break;
             case "u_u_{}":
                 User updateUser = uh.getUserById(id);
                 Profile updateProfile = ph.getProfileById(updateUser.getProfile().getId());
-                System.out.println("Введите имя: ");
-                updateProfile.setFirstName(sc.next());
-                System.out.println("Введите фамилию: ");
-                updateProfile.setLastName(sc.next());
-                System.out.println("Введите email: ");
-                updateProfile.seteMail(sc.next());
-                System.out.println("Введите телефон: ");
-                updateProfile.setPhoneNumber(sc.next());
-                System.out.println("Введите почтовый индекс: ");
-                updateProfile.setPostalCode(sc.nextLong());
+                Profile upPr = fillProfile(updateProfile);
 
-                System.out.println("Введите имя пользователя: ");
-                updateUser.setUser_name(sc.next());
-                System.out.println("Введите пароль: ");
-                updateUser.setPassword(sc.next());
-                updateUser.setProfile(updateProfile);
-
-                ph.updateProfile(updateProfile);
-                uh.updateUser(updateUser);
+                ph.updateProfile(upPr);
+                uh.updateUser(fillUser(updateUser, upPr));
 
                 System.out.println("Изменения успешно сохранены!");
                 break;
             case "d_u_{}":
+                ih.removeIncident(uh.getUserById(id));
                 uh.remove(uh.getUserById(id));
                 System.out.println("Удаление прошло успешно!");
                 break;
@@ -225,6 +207,11 @@ public class Main {
                 "Description", user2);
         Incident incident3 = new Incident("Incident_3", true,
                 "Description", user3);
+
+        user1.addIncident(incident1);
+        user2.addIncident(incident2);
+        user3.addIncident(incident3);
+
         Service service1 = new Service("Service_1", true, 200.0, 1);
         Service service2 = new Service("Service_2", false, 2032.0, 2);
         Service service3 = new Service("Service_3", false, 11.7, 3);
@@ -253,5 +240,40 @@ public class Main {
         ih.addIncident(incident1);
         ih.addIncident(incident2);
         ih.addIncident(incident3);
+    }
+    public static Profile fillProfile(Profile profile){
+        System.out.println("Введите имя: ");
+        profile.setFirstName(sc.next());
+
+        System.out.println("Введите фамилию: ");
+        profile.setLastName(sc.next());
+
+        System.out.println("Введите email: ");
+        profile.seteMail(sc.next());
+
+        System.out.println("Введите телефон: ");
+        profile.setPhoneNumber(sc.next());
+
+        System.out.println("Введите почтовый индекс: ");
+        profile.setPostalCode(sc.nextLong());
+
+        return profile;
+    }
+
+    public static User fillUser(User user, Profile profile){
+        UserRoleHelper urh = new UserRoleHelper();
+
+        System.out.println("Введите имя пользователя: ");
+        user.setUser_name(sc.next());
+
+        System.out.println("Введите пароль: ");
+        user.setPassword(sc.next());
+
+        user.setProfile(profile);
+
+        System.out.println("Выберите права доступа (USER, ADMIN, SUPER_ADMIN): ");
+        user.setUserRole(urh.getUserRole(sc.next()));
+
+        return user;
     }
 }

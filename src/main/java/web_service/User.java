@@ -1,8 +1,5 @@
 package web_service;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +23,11 @@ public class User {
                 joinColumns = @JoinColumn(name = "user_id"),
                 inverseJoinColumns = @JoinColumn(name = "service_id"))
     private List<Service> services = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @Transient
+    private List<Incident> incidents = new ArrayList<>();
 
     public User() {
     }
@@ -83,6 +85,14 @@ public class User {
 
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
+    }
+
+    public void addIncident(Incident incident){
+        incidents.add(incident);
+    }
+
+    public void deleteIncident(Incident incident){
+        incidents.remove(incident);
     }
 
     @Override
