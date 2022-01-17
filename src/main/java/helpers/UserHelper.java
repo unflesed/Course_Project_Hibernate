@@ -5,22 +5,14 @@ import org.hibernate.SessionFactory;
 import web_service.Service;
 import web_service.User;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
 public class UserHelper {
     private final SessionFactory sessionFactory;
 
-    EntityManagerFactory emf;
-    EntityManager em;
-
     public UserHelper() {
         sessionFactory = HibernateUtil.getSessionFactory();
-        emf = Persistence.createEntityManagerFactory("base");
-        em = emf.createEntityManager();
     }
 
     public void addUser(User user){
@@ -54,9 +46,6 @@ public class UserHelper {
     }
 
     public void remove(User user) {
-//        em.getTransaction().begin();
-//        em.remove(em.contains(user) ? user : em.merge(user));
-//        em.getTransaction().commit();
         Session session = sessionFactory.openSession();
 
         session.beginTransaction();
