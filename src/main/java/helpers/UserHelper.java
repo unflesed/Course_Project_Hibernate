@@ -5,7 +5,10 @@ import org.hibernate.SessionFactory;
 import web_service.Service;
 import web_service.User;
 
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class UserHelper {
@@ -69,18 +72,26 @@ public class UserHelper {
         return userList;
     }
 
-    public User checkUserPassword(String user, String password){
+        public User checkUserPassword(String user, String password){
         Session session = sessionFactory.openSession();
 
-        CriteriaQuery<User> criteriaQuery = session.getCriteriaBuilder().createQuery(User.class);
-        criteriaQuery.from(User.class);
+        CriteriaBuilder cb = session.getCriteriaBuilder();
 
-        List<User> list = session.createQuery(criteriaQuery).getResultList();
+        CriteriaQuery<User> criteriaQuery = cb.createQuery(User.class);
+        Root<User> root = criteriaQuery.from(User.class);
 
-        for (User u: list) {
-            if (u.getUser_name().equalsIgnoreCase(user) && u.getPassword().equalsIgnoreCase(password)) {
-                return u;
-            }
+        criteriaQuery.select(root)
+                .where(cb.and(cb.equal(root.get("user_name"), user.toUpperCase()),
+                        cb.equal(root.get("password"), password.toUpperCase())));
+
+        Query query = session.createQuery(criteriaQuery);
+
+        List<User> list = query.getResultList();
+
+        session.close();
+
+        for (User u : list) {
+            return u;
         }
         return null;
     }

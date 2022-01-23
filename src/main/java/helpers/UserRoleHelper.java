@@ -2,9 +2,13 @@ package helpers;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import web_service.User;
 import web_service.UserRole;
 
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class UserRoleHelper {
@@ -28,15 +32,22 @@ public class UserRoleHelper {
     public UserRole getUserRole(String userRole){
         Session session = sessionFactory.openSession();
 
-        CriteriaQuery<UserRole> criteriaQuery = session.getCriteriaBuilder().createQuery(UserRole.class);
-        criteriaQuery.from(UserRole.class);
+        CriteriaBuilder cb = session.getCriteriaBuilder();
 
-        List<UserRole> roleList = session.createQuery(criteriaQuery).getResultList();
+        CriteriaQuery<UserRole> criteriaQuery = cb.createQuery(UserRole.class);
+        Root<UserRole> root = criteriaQuery.from(UserRole.class);
 
-        for (UserRole role: roleList) {
-            if (role.getRole_name().equalsIgnoreCase(userRole)) {
-                return role;
-            }
+        criteriaQuery.select(root)
+                .where(cb.equal(root.get("role_name"), userRole));
+
+        Query query = session.createQuery(criteriaQuery);
+
+        List<UserRole> list = query.getResultList();
+
+        session.close();
+
+        for (UserRole ur : list) {
+            return ur;
         }
         return null;
     }

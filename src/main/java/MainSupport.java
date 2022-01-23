@@ -155,9 +155,9 @@ public class MainSupport {
                 "ivanov@mail.ru", "+3754534543",35222342);
         Profile profile3 = new Profile("Petr", "Petrov",
                 "petrov@gmail.com", "+38035434453",132423423);
-        User user1 = new User("Admin","123",profile1, userRole1);
-        User user2 = new User("User_1","123",profile2, userRole2);
-        User user3 = new User("Super","123",profile3, userRole3);
+        User user1 = new User("ADMIN","123",profile1, userRole1);
+        User user2 = new User("USER_1","123",profile2, userRole2);
+        User user3 = new User("SUPER","123",profile3, userRole3);
         Incident incident1 = new Incident("Incident_1", true,
                 "Description", user1);
         Incident incident2 = new Incident("Incident_2", false,
@@ -221,15 +221,15 @@ public class MainSupport {
         UserRoleHelper urh = new UserRoleHelper();
 
         System.out.println("Введите имя пользователя: ");
-        user.setUser_name(sc.next());
+        user.setUser_name(sc.next().toUpperCase());
 
         System.out.println("Введите пароль: ");
-        user.setPassword(sc.next());
+        user.setPassword(sc.next().toUpperCase());
 
         user.setProfile(profile);
 
         System.out.println("Выберите права доступа (USER, ADMIN, SUPER_ADMIN): ");
-        user.setUserRole(urh.getUserRole(sc.next()));
+        user.setUserRole(urh.getUserRole(sc.next().toUpperCase()));
 
         return user;
     }

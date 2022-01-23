@@ -18,7 +18,7 @@ public class User {
     @OneToOne
     @JoinColumn(name = "user_role_id")
     private UserRole userRole;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_services",
                 joinColumns = @JoinColumn(name = "user_id"),
                 inverseJoinColumns = @JoinColumn(name = "service_id"))
