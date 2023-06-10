@@ -4,7 +4,7 @@
 3. Создайте базу данных CustomerSupportService.
 4. Запустите программу. 
 
-Описание команд для консоли и доступ указан в папке resources файл ![img.png](src%2Fmain%2Fresources%2Fimg.png).
+Описание команд для консоли и доступы ![img.png](src%2Fmain%2Fresources%2Fimg.png).
 Команды реализованы сокращенно, используя первые буквы слов.
 Комманду fetch_all_users необходимо вводить как f_a_u,
 команду fetch_user_by_{id} необходимо вводить как f_u_b_{1}.
